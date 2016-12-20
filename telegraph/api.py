@@ -46,6 +46,12 @@ class Telegraph(object):
         self._telegraph = TelegraphApi(access_token)
         self._method = method
 
+    def get_access_token(self):
+        """ Return current access_token
+        """
+
+        return self._telegraph.access_token
+
     def create_account(self, short_name, author_name=None, author_url=None,
                        replace_token=True):
         """ Create a new Telegraph account
