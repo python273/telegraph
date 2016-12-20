@@ -52,13 +52,13 @@ class HtmlToNodesParser(HTMLParser):
         self.current_node_list.append(data)
 
     def handle_entityref(self, name):
-        self.current_node_list.append(unichr(name2codepoint[name]))
+        self.current_node_list.append(chr(name2codepoint[name]))
 
     def handle_charref(self, name):
         if name.startswith('x'):
-            c = unichr(int(name[1:], 16))
+            c = chr(int(name[1:], 16))
         else:
-            c = unichr(int(name))
+            c = chr(int(name))
 
         self.current_node_list.append(c)
 
