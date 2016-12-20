@@ -1,11 +1,12 @@
 try:
     from html.parser import HTMLParser  # python 3.x
+    from html.entities import name2codepoint
     from html import escape
 except ImportError:
     from HTMLParser import HTMLParser  # python 2.x
+    from htmlentitydefs import name2codepoint
     from cgi import escape
 
-from htmlentitydefs import name2codepoint
 
 ALLOWED_TAGS = [
     'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure',

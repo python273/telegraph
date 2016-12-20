@@ -3,7 +3,7 @@ import json
 
 import requests
 
-from utils import html_to_nodes, nodes_to_html
+from .utils import html_to_nodes, nodes_to_html
 
 
 class TelegraphApi(object):
