@@ -3,6 +3,8 @@ try:
     from html.entities import name2codepoint
     from html import escape
 except ImportError:
+    chr = unichr
+
     from HTMLParser import HTMLParser  # python 2.x
     from htmlentitydefs import name2codepoint
     from cgi import escape
