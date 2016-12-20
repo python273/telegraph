@@ -1,4 +1,6 @@
 # Telegraph
+[![Build Status](https://travis-ci.org/python273/telegraph.svg?branch=master)](https://travis-ci.org/python273/telegraph)
+
 Python Telegraph API wrapper
 
 # Example
@@ -9,7 +11,7 @@ Python Telegraph API wrapper
     telegraph.create_account(short_name='1337')
 
     response = telegraph.create_page(
-        'Python Telegraph API wrapper',
+        'Hey',
         html_content='<p>Hello, world!</p>'
     )
 
