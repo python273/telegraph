@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+import sys
 from telegraph.utils import html_to_nodes, nodes_to_html
 
 
@@ -18,14 +18,30 @@ NODES_TEST_LIST = [
      }
 ]
 
+NODES_TEST_LIST_PY35 = [
+    {'tag': 'p', 'children': ['Hello, world!']},
+    {'tag': 'p', 'children': [{
+        'tag': 'a',
+        'attrs': {'href': 'https://telegra.ph/'},
+        'children': ['Test link</a>']
+        }]
+     }
+]
+
 
 class TestHTMLConverter(TestCase):
     def test_html_to_nodes(self):
 
-        self.assertEqual(
-            html_to_nodes(HTML_TEST_STR),
-            NODES_TEST_LIST
-        )
+        if sys.version_info.major == 3 and sys.version_info.minor == 5:
+            self.assertEqual(
+                html_to_nodes(HTML_TEST_STR),
+                NODES_TEST_LIST_PY35
+            )
+        else:
+            self.assertEqual(
+                html_to_nodes(HTML_TEST_STR),
+                NODES_TEST_LIST
+            )
 
     def test_nodes_to_html(self):
         self.assertEqual(
