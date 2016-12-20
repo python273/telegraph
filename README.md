@@ -3,20 +3,26 @@
 
 Python Telegraph API wrapper
 
+python2 and python3 are supported
+
 # Example
-    from telegraph import Telegraph
-    
-    telegraph = Telegraph()
+```python
+from telegraph import Telegraph
 
-    telegraph.create_account(short_name='1337')
+telegraph = Telegraph()
 
-    response = telegraph.create_page(
-        'Hey',
-        html_content='<p>Hello, world!</p>'
-    )
+telegraph.create_account(short_name='1337')
 
-    print('http://telegra.ph/{}'.format(response['path']))
+response = telegraph.create_page(
+'Hey',
+html_content='<p>Hello, world!</p>'
+)
+
+print('http://telegra.ph/{}'.format(response['path']))
+```
 
 # Installation
 
-    $ pip install telegraph
+```bash
+$ pip install telegraph
+```
