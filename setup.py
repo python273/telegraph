@@ -14,7 +14,7 @@ from distutils.core import setup
 
 setup(
     name='telegraph',
-    version='0.9',
+    version='1.0',
     author='python273',
     author_email='whoami@python273.pw',
     url='https://github.com/python273/telegraph',

@@ -9,6 +9,6 @@ Copyright (C) 2016
 """
 
 __author__ = 'python273'
-__version__ = '0.9'
+__version__ = '1.0'
 
 from .api import Telegraph, TelegraphException
