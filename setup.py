@@ -9,7 +9,10 @@
 Copyright (C) 2016
 """
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 
 setup(
@@ -20,7 +23,7 @@ setup(
     url='https://github.com/python273/telegraph',
     description='Telegraph API wrapper',
     download_url='https://github.com/python273/telegraph/archive/master.zip',
-    license='MIT License, see LICENSE file',
+    license='MIT',
 
     packages=['telegraph'],
     install_requires=['requests'],
@@ -29,7 +32,9 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: PyPy',
