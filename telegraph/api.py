@@ -3,6 +3,7 @@ import json
 
 import requests
 
+from .exceptions import TelegraphException
 from .utils import html_to_nodes, nodes_to_html
 
 
@@ -248,7 +249,3 @@ class Telegraph(object):
             'day': day,
             'hour': hour
         })
-
-
-class TelegraphException(Exception):
-    pass

@@ -9,6 +9,8 @@ except ImportError:
     from htmlentitydefs import name2codepoint
     from cgi import escape
 
+from .exceptions import NotAllowedTag, InvalidHTML
+
 
 ALLOWED_TAGS = [
     'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure',
@@ -48,6 +50,9 @@ class HtmlToNodesParser(HTMLParser):
     def handle_endtag(self, tag):
         self.current_node_list = self.parent_node_lists.pop(-1)
 
+        if self.current_node_list[-1]['tag'] != tag:
+            raise InvalidHTML
+
     def handle_data(self, data):
         self.current_node_list.append(data)
 
@@ -61,10 +66,6 @@ class HtmlToNodesParser(HTMLParser):
             c = chr(int(name))
 
         self.current_node_list.append(c)
-
-
-class NotAllowedTag(Exception):
-    pass
 
 
 def html_to_nodes(html_content):
@@ -112,9 +113,11 @@ def nodes_to_html(nodes):
                 html_content.append(escape(node))
 
         if not current_nodes:
-            if stack:
+            if tags_stack:
                 html_content.append('</{}>'.format(tags_stack.pop(-1)))
-                current_nodes = stack.pop(0)
+
+            if stack:
+                current_nodes = stack.pop(-1)
             else:
                 break
 
