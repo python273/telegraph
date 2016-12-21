@@ -1,9 +1,9 @@
 # Telegraph
 [![Build Status](https://travis-ci.org/python273/telegraph.svg?branch=master)](https://travis-ci.org/python273/telegraph)
+![Python Versions](https://img.shields.io/pypi/pyversions/telegraph.svg)
+![License](https://img.shields.io/github/license/python273/telegraph.svg)
 
 Python Telegraph API wrapper
-
-python2 and python3 are supported
 
 # Example
 ```python
