@@ -51,13 +51,13 @@ class TestTelegraph(TestCase):
 
     def test_get_page_html(self):
         telegraph = Telegraph()
-        response = telegraph.get_page('Sample-Page-12-15')
+        response = telegraph.get_page('Hey-01-17-2')
 
         self.assertEqual(response['content'], '<p>Hello, world!</p>')
 
     def test_get_page(self):
         telegraph = Telegraph()
-        response = telegraph.get_page('Sample-Page-12-15', return_html=False)
+        response = telegraph.get_page('Hey-01-17-2', return_html=False)
 
         self.assertEqual(
             response['content'],
@@ -66,6 +66,6 @@ class TestTelegraph(TestCase):
 
     def test_get_page_without_content(self):
         telegraph = Telegraph()
-        response = telegraph.get_page('Sample-Page-12-15', return_content=False)
+        response = telegraph.get_page('Hey-01-17-2', return_content=False)
 
         self.assertTrue('content' not in response)
