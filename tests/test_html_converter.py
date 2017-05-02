@@ -33,7 +33,7 @@ NODES_TEST_LIST_PY35 = [
 class TestHTMLConverter(TestCase):
     def test_html_to_nodes(self):
 
-        if sys.version_info.major == 3 and sys.version_info.minor == 5:
+        if sys.version_info.major == 3 and sys.version_info.minor >= 5:
             self.assertEqual(
                 html_to_nodes(HTML_TEST_STR),
                 NODES_TEST_LIST_PY35
