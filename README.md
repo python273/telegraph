@@ -1,5 +1,6 @@
 # Telegraph
 [![Build Status](https://travis-ci.org/python273/telegraph.svg?branch=master)](https://travis-ci.org/python273/telegraph)
+[![PyPI](https://img.shields.io/pypi/v/telegraph.svg)](https://pypi.python.org/pypi/telegraph)
 ![Python Versions](https://img.shields.io/pypi/pyversions/telegraph.svg)
 ![License](https://img.shields.io/github/license/python273/telegraph.svg)
 
