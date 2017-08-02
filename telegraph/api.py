@@ -8,6 +8,10 @@ from .utils import html_to_nodes, nodes_to_html
 
 
 class TelegraphApi(object):
+    """ Telegraph Api Client
+    
+    """
+
     __slots__ = ('access_token', 'session')
 
     def __init__(self, access_token=None):
@@ -19,33 +23,33 @@ class TelegraphApi(object):
         self.access_token = access_token
         self.session = requests.Session()
 
-    def method(self, method, values=None, path=None):
-
-        if values is not None:
-            values = values.copy()
-        else:
-            values = {}
+    def method(self, method, values=None, path=''):
+        values = values.copy() if values is not None else {}
 
         if 'access_token' not in values and self.access_token:
             values['access_token'] = self.access_token
 
         response = self.session.post(
-            'https://api.telegra.ph/{}/{}'.format(method, path if path else ''),
+            'https://api.telegra.ph/{}/{}'.format(method, path),
             values
         ).json()
 
         if response.get('ok'):
             return response['result']
-        else:
-            raise TelegraphException(response.get('error'))
+
+        raise TelegraphException(response.get('error'))
 
 
 class Telegraph(object):
-    __slots__ = ('_telegraph', '_method')
+    __slots__ = ('_telegraph',)
 
-    def __init__(self, access_token=None, method=None):
+    def __init__(self, access_token=None):
+        """
+
+        :param access_token: Telegraph access token
+        """
+
         self._telegraph = TelegraphApi(access_token)
-        self._method = method
 
     def get_access_token(self):
         """ Return current access_token
@@ -121,6 +125,7 @@ class Telegraph(object):
                      i.e. everything that comes after http://telegra.ph/)
 
         :param return_content: If true, content field will be returned
+        :param return_html: If true, returns HTML instead of Nodes list
         """
 
         response = self._telegraph.method('getPage', path=path, values={
