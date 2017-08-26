@@ -17,7 +17,7 @@ except ImportError:
 
 setup(
     name='telegraph',
-    version='1.1.1',
+    version='1.2',
     author='python273',
     author_email='whoami@python273.pw',
     url='https://github.com/python273/telegraph',
