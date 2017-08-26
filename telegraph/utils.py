@@ -1,13 +1,18 @@
-try:
-    from html.parser import HTMLParser  # python 3.x
+# -*- coding: utf-8 -*-
+
+try:  # python 3.x
+    from html.parser import HTMLParser
     from html.entities import name2codepoint
     from html import escape
-except ImportError:
-    chr = unichr
 
-    from HTMLParser import HTMLParser  # python 2.x
+    basestring = str
+
+except ImportError:  # python 2.x
+    from HTMLParser import HTMLParser
     from htmlentitydefs import name2codepoint
     from cgi import escape
+
+    chr = unichr
 
 from .exceptions import NotAllowedTag, InvalidHTML
 
@@ -18,6 +23,11 @@ ALLOWED_TAGS = [
     'strong', 'u', 'ul', 'video'
 ]
 
+VOID_ELEMENTS = {
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen',
+    'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'
+}
+
 
 class HtmlToNodesParser(HTMLParser):
     def __init__(self):
@@ -25,8 +35,14 @@ class HtmlToNodesParser(HTMLParser):
 
         self.nodes = []
 
-        self.current_node_list = self.nodes
-        self.parent_node_lists = []
+        self.current_nodes = self.nodes
+        self.parent_nodes = []
+
+    def add_str_node(self, s):
+        if self.current_nodes and isinstance(self.current_nodes[-1], basestring):
+            self.current_nodes[-1] += s
+        else:
+            self.current_nodes.append(s)
 
     def handle_starttag(self, tag, attrs_list):
         if tag not in ALLOWED_TAGS:
@@ -42,22 +58,30 @@ class HtmlToNodesParser(HTMLParser):
 
             node['attrs'] = attrs
 
-        self.current_node_list.append(node)
-        self.parent_node_lists.append(self.current_node_list)
+        self.current_nodes.append(node)
+        self.parent_nodes.append(self.current_nodes)
 
-        self.current_node_list = node['children']
+        self.current_nodes = node['children']
 
     def handle_endtag(self, tag):
-        self.current_node_list = self.parent_node_lists.pop(-1)
+        self.current_nodes = self.parent_nodes.pop()
 
-        if self.current_node_list[-1]['tag'] != tag:
+        last_node = self.current_nodes[-1]
+
+        if last_node['tag'] != tag:
             raise InvalidHTML
 
+        if not last_node['children']:
+            last_node.pop('children')
+
     def handle_data(self, data):
-        self.current_node_list.append(data)
+        if data == '\n':
+            return
+
+        self.add_str_node(data)
 
     def handle_entityref(self, name):
-        self.current_node_list.append(chr(name2codepoint[name]))
+        self.add_str_node(chr(name2codepoint[name]))
 
     def handle_charref(self, name):
         if name.startswith('x'):
@@ -65,7 +89,7 @@ class HtmlToNodesParser(HTMLParser):
         else:
             c = chr(int(name))
 
-        self.current_node_list.append(c)
+        self.add_str_node(c)
 
 
 def html_to_nodes(html_content):
@@ -80,7 +104,7 @@ def nodes_to_html(nodes):
 
     stack = []
     tags_stack = []
-    current_nodes = nodes
+    current_nodes = nodes[:]
 
     while True:
         if current_nodes:
@@ -95,7 +119,7 @@ def nodes_to_html(nodes):
                     attrs_str = ['']
 
                     for attr, value in attrs.items():
-                        attrs_str.append('{}="{}"'.format(attr, value))
+                        attrs_str.append('{}="{}"'.format(attr, escape(value)))
                 else:
                     attrs_str = []
 
@@ -104,20 +128,28 @@ def nodes_to_html(nodes):
                     ' '.join(attrs_str)
                 ))
 
-                children = node.get('children')
-
-                if children:
-                    stack.append(current_nodes)
-                    current_nodes = children
+                children = node.get('children', [])
+                stack.append(current_nodes)
+                current_nodes = children
             else:
                 html_content.append(escape(node))
 
         if not current_nodes:
             if tags_stack:
-                html_content.append('</{}>'.format(tags_stack.pop(-1)))
+                closed_tag = tags_stack.pop()
+
+                last_el = html_content[-1]
+
+                if closed_tag in VOID_ELEMENTS and \
+                   last_el.startswith('<{}'.format(closed_tag)) and \
+                   not last_el.endswith('/>'):
+
+                    html_content[-1] = last_el[:-1] + '/>'
+                else:
+                    html_content.append('</{}>'.format(closed_tag))
 
             if stack:
-                current_nodes = stack.pop(-1)
+                current_nodes = stack.pop()
             else:
                 break
 
