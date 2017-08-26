@@ -39,6 +39,9 @@ class HtmlToNodesParser(HTMLParser):
         self.parent_nodes = []
 
     def add_str_node(self, s):
+        if not s:
+            return
+
         if self.current_nodes and isinstance(self.current_nodes[-1], basestring):
             self.current_nodes[-1] += s
         else:
@@ -75,10 +78,7 @@ class HtmlToNodesParser(HTMLParser):
             last_node.pop('children')
 
     def handle_data(self, data):
-        if data == '\n':
-            return
-
-        self.add_str_node(data)
+        self.add_str_node(data.strip())
 
     def handle_entityref(self, name):
         self.add_str_node(chr(name2codepoint[name]))
