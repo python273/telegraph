@@ -51,7 +51,7 @@ class HtmlToNodesParser(HTMLParser):
         if tag not in ALLOWED_TAGS:
             raise NotAllowedTag('%s tag is not allowed', tag)
 
-        node = {'tag': tag, 'children': []}
+        node = {'tag': tag}
 
         if attrs_list:
             attrs = {}
@@ -62,17 +62,23 @@ class HtmlToNodesParser(HTMLParser):
             node['attrs'] = attrs
 
         self.current_nodes.append(node)
-        self.parent_nodes.append(self.current_nodes)
 
-        self.current_nodes = node['children']
+        if tag not in VOID_ELEMENTS:
+            self.parent_nodes.append(self.current_nodes)
+            self.current_nodes = node['children'] = []
 
     def handle_endtag(self, tag):
+        if tag in VOID_ELEMENTS:
+            return
+
         self.current_nodes = self.parent_nodes.pop()
 
         last_node = self.current_nodes[-1]
 
         if last_node['tag'] != tag:
-            raise InvalidHTML
+            raise InvalidHTML('"{}" tag closed instead of "{}"'.format(
+                tag, last_node['tag']
+            ))
 
         if not last_node['children']:
             last_node.pop('children')
@@ -91,12 +97,19 @@ class HtmlToNodesParser(HTMLParser):
 
         self.add_str_node(c)
 
+    def get_nodes(self):
+        if self.parent_nodes:
+            not_closed_tag = self.parent_nodes[-1][-1]['tag']
+            raise InvalidHTML('"{}" tag is not closed'.format(not_closed_tag))
+
+        return self.nodes
+
 
 def html_to_nodes(html_content):
     parser = HtmlToNodesParser()
     parser.feed(html_content)
 
-    return parser.nodes
+    return parser.get_nodes()
 
 
 def nodes_to_html(nodes):
