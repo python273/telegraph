@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from telegraph import Telegraph
 
@@ -9,6 +9,7 @@ Python Telegraph API Wrapper</a></p>
 
 
 class TestTelegraph(TestCase):
+    @skip('unstable page creation, PAGE_SAVE_FAILED')
     def test_flow(self):
         telegraph = Telegraph()
 
