@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from telegraph.exceptions import NotAllowedTag, InvalidHTML
-from telegraph.utils import html_to_nodes, nodes_to_html
+from telegraph.utils import html_to_nodes, nodes_to_html, clear_whitespace_nodes
 
 HTML_TEST_STR = """
 <p>Hello, world!<br/></p>
@@ -26,6 +26,25 @@ NODES_TEST_LIST = [
     ]}
 ]
 
+HTML_MULTI_LINES = """
+<p>
+    <b>
+        Hello,
+
+    </b>
+    world!
+</p>
+"""
+
+HTML_MULTI_LINES1 = """<p><b>Hello, </b>world! </p>"""
+
+HTML_MULTI_LINES_NODES_LIST = [
+    {'tag': 'p', 'children': [
+        {'tag': 'b', 'children': ['Hello, ']},
+        'world! '
+    ]},
+]
+
 
 class TestHTMLConverter(TestCase):
     def test_html_to_nodes(self):
@@ -38,6 +57,16 @@ class TestHTMLConverter(TestCase):
         self.assertEqual(
             nodes_to_html(NODES_TEST_LIST),
             HTML_TEST_STR
+        )
+
+    def test_html_to_nodes_multi_line(self):
+        self.assertEqual(
+            html_to_nodes(HTML_MULTI_LINES),
+            HTML_MULTI_LINES_NODES_LIST
+        )
+        self.assertEqual(
+            html_to_nodes(HTML_MULTI_LINES1),
+            HTML_MULTI_LINES_NODES_LIST
         )
 
     def test_html_to_nodes_invalid_html(self):
@@ -67,3 +96,37 @@ class TestHTMLConverter(TestCase):
             nodes_to_html([]),
             ''
         )
+
+    def test_clear_whitespace_nodes(self):
+        nodes = [
+            '\n',
+            {'tag': 'p', 'children': [
+                {'tag': 'i', 'children': ['A']},
+                {'tag': 'b', 'children': [' ']},
+                {'tag': 'b', 'children': [
+                    'B ',
+                    {'tag': 'i', 'children': ['C']},
+                    {'tag': 'i', 'children': [{'tag': 'b'}]},
+                    ' D '
+                ]},
+                ' E '
+            ]},
+            {'tag': 'p', 'children': [' F ']},
+            '\n'
+        ]
+        expected = [
+            {'tag': 'p', 'children': [
+                {'tag': 'i', 'children': ['A']},
+                {'tag': 'b', 'children': [' ']},
+                {'tag': 'b', 'children': [
+                    'B ',
+                    {'tag': 'i', 'children': ['C']},
+                    {'tag': 'i', 'children': [{'tag': 'b'}]},
+                    ' D '
+                ]},
+                'E '
+            ]},
+            {'tag': 'p', 'children': ['F ']}
+        ]
+
+        self.assertEqual(clear_whitespace_nodes(nodes)[0], expected)

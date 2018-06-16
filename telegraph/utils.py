@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import re
+
+from .exceptions import NotAllowedTag, InvalidHTML
 
 try:  # python 3.x
     from html.parser import HTMLParser
@@ -14,18 +17,27 @@ except ImportError:  # python 2.x
 
     chr = unichr
 
-from .exceptions import NotAllowedTag, InvalidHTML
+
+RE_WHITESPACE = re.compile(r'(\s+)', re.UNICODE)
 
 
-ALLOWED_TAGS = [
+ALLOWED_TAGS = {
     'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure',
     'h3', 'h4', 'hr', 'i', 'iframe', 'img', 'li', 'ol', 'p', 'pre', 's',
     'strong', 'u', 'ul', 'video'
-]
+}
 
 VOID_ELEMENTS = {
     'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen',
     'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'
+}
+
+BLOCK_ELEMENTS = {
+    'address', 'article', 'aside', 'blockquote', 'canvas', 'dd', 'div', 'dl',
+    'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2',
+    'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'li', 'main', 'nav',
+    'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table', 'tfoot', 'ul',
+    'video'
 }
 
 
@@ -84,7 +96,7 @@ class HtmlToNodesParser(HTMLParser):
             last_node.pop('children')
 
     def handle_data(self, data):
-        self.add_str_node(data.strip())
+        self.add_str_node(data)
 
     def handle_entityref(self, name):
         self.add_str_node(chr(name2codepoint[name]))
@@ -105,11 +117,69 @@ class HtmlToNodesParser(HTMLParser):
         return self.nodes
 
 
+def clear_whitespace_nodes(nodes, last_text_node=None):
+    """
+
+    :param nodes:
+    :type nodes: list
+    :param last_text_node:
+    :type last_text_node: basestring
+    :return: list
+    """
+    # TODO: probably possible to move to html parser
+
+    stack = []
+    current_nodes = nodes[:]
+
+    new_nodes = []
+    new_children = new_nodes
+
+    while True:
+        if current_nodes:
+            node = current_nodes.pop(0)
+
+            if type(node) is dict:
+                is_block_element = node['tag'] in BLOCK_ELEMENTS
+                if is_block_element:
+                    last_text_node = None
+
+                new_children.append(node)
+
+                node_children = node.get('children')
+
+                if node_children:
+                    stack.append((current_nodes, new_children))
+                    current_nodes = node_children
+                    new_children = []
+                    node['children'] = new_children
+            else:
+                node = RE_WHITESPACE.sub(' ', node)
+
+                if last_text_node is None or last_text_node.endswith(' '):
+                    node = node.lstrip(' ')
+
+                if node:
+                    last_text_node = node
+                    new_children.append(node)
+                else:
+                    last_text_node = None
+
+        if not current_nodes:
+            if stack:
+                current_nodes, new_children = stack.pop()
+            else:
+                break
+
+    return new_nodes, last_text_node
+
+
 def html_to_nodes(html_content):
     parser = HtmlToNodesParser()
     parser.feed(html_content)
 
-    return parser.get_nodes()
+    nodes = parser.get_nodes()
+    nodes, _ = clear_whitespace_nodes(nodes)
+    return nodes
 
 
 def nodes_to_html(nodes):
