@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import mimetypes
 
 import requests
 
@@ -41,20 +40,6 @@ class TelegraphApi(object):
             return response['result']
 
         raise TelegraphException(response.get('error'))
-
-    def upload(self, file):
-        with open(file, 'rb') as f:
-            mime = mimetypes.MimeTypes().guess_type(file)[0]
-
-            if mime not in ALLOWED_MIMES:
-                raise TelegraphException("Wrong file format")
-
-            response = self.session.post(
-                'http://telegra.ph/upload',
-                files={'file': ('file', f, mime)}
-            ).json()
-
-        return response[0]['src']
 
 
 class Telegraph(object):
@@ -271,6 +256,3 @@ class Telegraph(object):
             'day': day,
             'hour': hour
         })
-
-    def upload(self, file):
-        return self._telegraph.upload(file)

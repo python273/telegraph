@@ -12,3 +12,4 @@ __author__ = 'python273'
 __version__ = '1.2.1'
 
 from .api import Telegraph, TelegraphException
+from .upload import upload
