@@ -3,34 +3,41 @@ import requests
 
 from .exceptions import TelegraphException
 
+opened_files = []
 
-def check_file(file):
-    if hasattr(file, 'read'):
-        f = file
-        if hasattr(file, 'name'):
-            filename = file.name
+
+def check_file(f):
+    if hasattr(f, 'read'):
+        if hasattr(f, 'name'):
+            filename = f.name
         else:
             filename = ''
     else:
-        f = open(file, 'rb')
-        filename = file
+        f = open(f, 'rb')
+        filename = f.name
+        opened_files.append(f)
 
     mime = mimetypes.MimeTypes().guess_type(filename)[0]
-    if mime is None:
-        f.close()
-        raise TypeError('File doesn\'t have name or extension')
-
     return f, mime
 
 
-def upload(file):
-    f, mime = check_file(file)
+def upload_file(f):
+    global opened_files
+    f, mime = check_file(f)
     response = requests.post(
         'http://telegra.ph/upload',
         files={'file': ('file', f, mime)}
-    ).json()[0]
-    f.close()
-    if response.get('error'):
-        raise TelegraphException(response.get('error'))
+    ).json()
 
-    return response['src']
+    for n in opened_files:
+        n.close()
+    opened_files = []
+
+    try:
+        error = response.get('error')
+    except AttributeError:
+        error = response[0].get('error')
+    if error:
+        raise TelegraphException(error)
+
+    return response[0]['src']
