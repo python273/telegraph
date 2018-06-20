@@ -6,8 +6,6 @@ import requests
 from .exceptions import TelegraphException
 from .utils import html_to_nodes, nodes_to_html
 
-ALLOWED_MIMES = ['image/gif', 'image/jpeg', 'image/jpg', 'image/png', 'video/mp4']
-
 
 class TelegraphApi(object):
     """ Telegraph Api Client
