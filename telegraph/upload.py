@@ -3,8 +3,6 @@ import requests
 
 from .exceptions import TelegraphException
 
-opened_files = []
-
 
 def check_file(f):
     if hasattr(f, 'read'):
@@ -12,26 +10,25 @@ def check_file(f):
             filename = f.name
         else:
             filename = ''
+        opened = False
     else:
         f = open(f, 'rb')
         filename = f.name
-        opened_files.append(f)
+        opened = True
 
     mime = mimetypes.MimeTypes().guess_type(filename)[0]
-    return f, mime
+    return f, mime, opened
 
 
 def upload_file(f):
-    global opened_files
-    f, mime = check_file(f)
+    f, mime, opened = check_file(f)
     response = requests.post(
         'http://telegra.ph/upload',
         files={'file': ('file', f, mime)}
     ).json()
 
-    for n in opened_files:
-        n.close()
-    opened_files = []
+    if opened:
+        f.close()
 
     try:
         error = response.get('error')
