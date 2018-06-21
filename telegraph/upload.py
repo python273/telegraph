@@ -5,6 +5,8 @@ from .exceptions import TelegraphException
 
 
 def check_file(f):
+    """ :param f: Filename or file-like object.
+    """
     if hasattr(f, 'read'):
         if hasattr(f, 'name'):
             filename = f.name
@@ -21,6 +23,11 @@ def check_file(f):
 
 
 def upload_file(f):
+    """ Upload file to Telegra.ph's servers. Returns file link.
+        Allowed only .jpg, .jpeg, .png, .gif and .mp4 files.
+
+        :param f: Filename or file-like object.
+    """
     f, mime, opened = check_file(f)
     response = requests.post(
         'http://telegra.ph/upload',
