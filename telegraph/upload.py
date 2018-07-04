@@ -35,7 +35,7 @@ def upload_file(f):
     files_req = {}
 
     for x, f in enumerate(files):
-        files_req[f'file{x}'] = (f'file{x}', f, mimes[x])
+        files_req['file{}'.format(x)] = ('file{}'.format(x), f, mimes[x])
 
     response = requests.post(
         'http://telegra.ph/upload',
@@ -53,8 +53,7 @@ def upload_file(f):
         raise TelegraphException(error)
 
     res = {}
-    for x, src in enumerate(response):
-        src = f['src']
-        res[f'file{x}'] = (f'{src}')
+    for x, f in enumerate(response):
+        res['file{}'.format(x)] = f['src']
 
     return res
