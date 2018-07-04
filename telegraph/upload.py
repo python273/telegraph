@@ -31,6 +31,8 @@ def upload_file(f):
         :param f: Filename or file-like object.
         :type f: file, str or list
     """
+    if not isinstance(f, list):
+        f = [f]
     files, mimes, opened_files = check_file(f)
     files_req = {}
 
