@@ -1,61 +1,78 @@
 import mimetypes
+
 import requests
 
 from .exceptions import TelegraphException
 
 
-def check_file(paths):
-    files = []
-    mimes = []
-    opened_files = []
-    for f in paths:
-        if hasattr(f, 'read'):
-            if hasattr(f, 'name'):
-                filename = f.name
-            else:
-                filename = ''
-        else:
-            f = open(f, 'rb')
-            filename = f.name
-            opened_files.append(f)
-
-        mimes.append(mimetypes.MimeTypes().guess_type(filename)[0])
-        files.append(f)
-    return files, mimes, opened_files
-
-
 def upload_file(f):
-    """ Upload file to Telegra.ph's servers. Returns {"file<number>": "<link>"}.
+    """ Upload file to Telegra.ph's servers. Returns a list of links.
         Allowed only .jpg, .jpeg, .png, .gif and .mp4 files.
 
-        :param f: Filename or file-like object.
+        :param f: filename or file-like object.
         :type f: file, str or list
     """
-    if not isinstance(f, list):
-        f = [f]
-    files, mimes, opened_files = check_file(f)
-    files_req = {}
 
-    for x, f in enumerate(files):
-        files_req['file{}'.format(x)] = ('file{}'.format(x), f, mimes[x])
+    with FilesOpener(f) as files:
+        response = requests.post(
+            'http://telegra.ph/upload',
+            files=files
+        ).json()
 
-    response = requests.post(
-        'http://telegra.ph/upload',
-        files=files_req
-    ).json()
-
-    for f in opened_files:
-        f.close()
-
-    try:
-        error = response.get('error')
-    except AttributeError:
+    if isinstance(response, list):
         error = response[0].get('error')
+    else:
+        error = response.get('error')
+
     if error:
         raise TelegraphException(error)
 
-    res = {}
-    for x, f in enumerate(response):
-        res['file{}'.format(x)] = f['src']
+    return [i['src'] for i in response]
 
-    return res
+
+class FilesOpener(object):
+    def __init__(self, paths, key_format='file{}'):
+        if not isinstance(paths, list):
+            paths = [paths]
+
+        self.paths = paths
+        self.key_format = key_format
+        self.opened_files = []
+
+    def __enter__(self):
+        return self.open_files()
+
+    def __exit__(self, type, value, traceback):
+        self.close_files()
+
+    def open_files(self):
+        self.close_files()
+
+        files = []
+
+        for x, file_or_name in enumerate(self.paths):
+            if hasattr(file_or_name, 'read'):
+                f = file_or_name
+
+                if hasattr(f, 'name'):
+                    filename = f.name
+                else:
+                    filename = 'f.png'
+            else:
+                filename = file_or_name
+                f = open(filename, 'rb')
+                self.opened_files.append(f)
+
+            mimetype = mimetypes.MimeTypes().guess_type(filename)[0]
+
+            files.append(
+                (self.key_format.format(x), ('file{}'.format(x), f, mimetype))
+            )
+
+        return files
+
+    def close_files(self):
+        for f in self.opened_files:
+            f.close()
+
+        self.opened_files = []
