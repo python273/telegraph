@@ -5,7 +5,7 @@ import requests
 from .exceptions import TelegraphException
 
 
-def upload_file(f, fn=None):
+def upload_file(f):
     """ Upload file to Telegra.ph's servers. Returns a list of links.
         Allowed only .jpg, .jpeg, .png, .gif and .mp4 files.
 
@@ -15,8 +15,7 @@ def upload_file(f, fn=None):
         :param fn: filename. Required if can't get filename
         :type fn: str or list
     """
-
-    with FilesOpener(f, fn) as files:
+    with FilesOpener(f) as files:
         response = requests.post(
             'http://telegra.ph/upload',
             files=files
@@ -34,15 +33,11 @@ def upload_file(f, fn=None):
 
 
 class FilesOpener(object):
-    def __init__(self, paths, fn, key_format='file{}'):
+    def __init__(self, paths, key_format='file{}'):
         if not isinstance(paths, list):
             paths = [paths]
 
-        if not isinstance(fn, list):
-            fn = [fn]
-
         self.paths = paths
-        self.fn = fn
         self.key_format = key_format
         self.opened_files = []
 
@@ -58,13 +53,18 @@ class FilesOpener(object):
         files = []
 
         for x, file_or_name in enumerate(self.paths):
+            name = ''
+            if isinstance(file_or_name, tuple) and len(file_or_name) >= 2:
+                name = file_or_name[1]
+                file_or_name = file_or_name[0]
+
             if hasattr(file_or_name, 'read'):
                 f = file_or_name
 
                 if hasattr(f, 'name'):
                     filename = f.name
                 else:
-                    filename = self.fn[x]
+                    filename = name
             else:
                 filename = file_or_name
                 f = open(filename, 'rb')
