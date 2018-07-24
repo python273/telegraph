@@ -9,7 +9,7 @@ from .utils import html_to_nodes, nodes_to_html
 
 class TelegraphApi(object):
     """ Telegraph Api Client
-    
+
     """
 
     __slots__ = ('access_token', 'session')
