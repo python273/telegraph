@@ -6,6 +6,8 @@
 
 Python Telegraph API wrapper
 
+- [Documentation](https://python-telegraph.readthedocs.io/en/latest/)
+
 # Example
 ```python
 from telegraph import Telegraph

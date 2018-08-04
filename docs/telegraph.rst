@@ -9,6 +9,14 @@ telegraph.api module
     :undoc-members:
     :show-inheritance:
 
+telegraph.upload module
+-----------------------
+
+.. automodule:: telegraph.upload
+    :members:
+    :show-inheritance:
+
+
 telegraph.utils module
 ----------------------
 
