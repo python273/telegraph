@@ -9,11 +9,8 @@ def upload_file(f):
     """ Upload file to Telegra.ph's servers. Returns a list of links.
         Allowed only .jpg, .jpeg, .png, .gif and .mp4 files.
 
-        :param f: filename or file-like object.
-        :type f: file, str or list
-
-        :param fn: filename. Required if can't get filename
-        :type fn: str or list
+    :param f: filename or file-like object.
+    :type f: file, str or list
     """
     with FilesOpener(f) as files:
         response = requests.post(

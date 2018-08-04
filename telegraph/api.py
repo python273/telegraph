@@ -8,18 +8,15 @@ from .utils import html_to_nodes, nodes_to_html
 
 
 class TelegraphApi(object):
-    """ Telegraph Api Client
+    """ Telegraph API Client
 
+    :param access_token: access_token
+    :type access_token: str
     """
 
     __slots__ = ('access_token', 'session')
 
     def __init__(self, access_token=None):
-        """
-
-        :param access_token: access_token
-        :type access_token: str
-        """
         self.access_token = access_token
         self.session = requests.Session()
 
@@ -41,14 +38,14 @@ class TelegraphApi(object):
 
 
 class Telegraph(object):
+    """ Telegraph API client helper
+
+    :param access_token: Telegraph access token
+    """
+
     __slots__ = ('_telegraph',)
 
     def __init__(self, access_token=None):
-        """
-
-        :param access_token: Telegraph access token
-        """
-
         self._telegraph = TelegraphApi(access_token)
 
     def get_access_token(self):

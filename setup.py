@@ -6,7 +6,7 @@
 @contact: https://python273.pw/
 @license: MIT License, see LICENSE file
 
-Copyright (C) 2016
+Copyright (C) 2018
 """
 
 try:
