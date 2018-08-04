@@ -14,15 +14,29 @@ try:
 except ImportError:
     from distutils.core import setup
 
+version = '1.3.0'
+
+
+with open('README.md') as f:
+    long_description = f.read()
+
 
 setup(
     name='telegraph',
-    version='1.2.1',
+    version=version,
+
     author='python273',
-    author_email='whoami@python273.pw',
+
+    author_email='telegraph@python273.pw',
     url='https://github.com/python273/telegraph',
+
     description='Telegraph API wrapper',
-    download_url='https://github.com/python273/telegraph/archive/master.zip',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+
+    download_url='https://github.com/python273/telegraph/archive/v{}.zip'.format(
+        version
+    ),
     license='MIT',
 
     packages=['telegraph'],
@@ -38,6 +52,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: CPython',
     ]
