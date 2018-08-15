@@ -24,7 +24,7 @@ Example
        html_content='<p>Hello, world!</p>'
    )
 
-   print('http://telegra.ph/{}'.format(response['path']))
+   print('https://telegra.ph/{}'.format(response['path']))
 
 
 .. toctree::

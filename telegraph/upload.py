@@ -14,7 +14,7 @@ def upload_file(f):
     """
     with FilesOpener(f) as files:
         response = requests.post(
-            'http://telegra.ph/upload',
+            'https://telegra.ph/upload',
             files=files
         ).json()
 

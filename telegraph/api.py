@@ -119,7 +119,7 @@ class Telegraph(object):
         """ Get a Telegraph page
 
         :param path: Path to the Telegraph page (in the format Title-12-31,
-                     i.e. everything that comes after http://telegra.ph/)
+                     i.e. everything that comes after https://telegra.ph/)
 
         :param return_content: If true, content field will be returned
         :param return_html: If true, returns HTML instead of Nodes list

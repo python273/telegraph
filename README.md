@@ -21,7 +21,7 @@ response = telegraph.create_page(
     html_content='<p>Hello, world!</p>'
 )
 
-print('http://telegra.ph/{}'.format(response['path']))
+print('https://telegra.ph/{}'.format(response['path']))
 ```
 
 # Installation
