@@ -61,7 +61,7 @@ class HtmlToNodesParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs_list):
         if tag not in ALLOWED_TAGS:
-            raise NotAllowedTag('%s tag is not allowed', tag)
+            raise NotAllowedTag('%s tag is not allowed' % tag)
 
         node = {'tag': tag}
 
