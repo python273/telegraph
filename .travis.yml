@@ -12,3 +12,12 @@ install:
   - "pip install ."
   - "pip install nose"
 script: nosetests
+
+deploy:
+  provider: pypi
+  user: python273_travisci
+  password:
+    secure: KpZEfHMu+S80HaC1OQoYmeqWx/4oPIMaOvNOFV0RvJShVCUaXWnQx5AU0w7wJkc/E9d7VFxPm/gxcs5IGVokoHUyZ5Tal0HuTZWTo3CDZYQKErO11zGMHIMZ6eGZr48Kjy1PlBrD4Al3aC1nZH3A0fZobyyGEM+8lPqiW+7R3+Y40OHbqdBsNNnHwq3yF09m6lqr3dnIyvHYkQ4bMKWgcZC3/QUMZvRJ/xAU/udwukUZCIqRbE+iYIbgv5rl6NHvYbZ0q+iVpmHSRPNMuu1c2deAM7aAceW3tV6S++p1fv8kpDZU2LnKe7Wl1Fcm/OOpMWOa3grFK+7JxsREaQz/w70+n4DY0/ywfVbexpHM1UrT9xODY61SsJmwimURdBesmDXS5AR0oi0WhuUtq7WhSABPTDp+XpIkNhuFEPtPnWtvnplGe3Q6rIyMjUZw6HReepHHw9qkkeeI8JdYe/Ok2+7GCpWE75NdE06XLVxvyFZRjQPTPDtR6uwyZX2hu29AHOlDbUZOF8ZLtZ6tv7rt3kTBfRJRjZk7nt2dCc724ovVE3FgDeeESg7esGgLJk1AyYthTIGz91ddg7LPij4+z0xHoOwGklPjKBcs0mJaD6Xe5t/nAvbXjBFuKT15VdhJCVgq+6Tqh107e2VMHHQcJrNr7D2XuqzgPnVtkyHOUq0=
+  on:
+    tags: true
+    branch: master
