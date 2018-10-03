@@ -117,9 +117,9 @@ class Telegraph(object):
         """
 
         response = self._telegraph.method('revokeAccessToken')
-        
+
         self._telegraph.access_token = response.get('access_token')
-        
+
         return response
 
     def get_page(self, path, return_content=True, return_html=True):
