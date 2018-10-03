@@ -109,14 +109,19 @@ class Telegraph(object):
             'author_url': author_url
         })
 
-    def revoke_access_token(self):
+    def revoke_access_token(self, replace_token=None):
         """ Revoke access_token and generate a new one, for example,
             if the user would like to reset all connected sessions, or
             you have reasons to believe the token was compromised.
             On success, returns dict with new access_token and auth_url fields
         """
 
-        return self._telegraph.method('revokeAccessToken')
+        response = self._telegraph.method('revokeAccessToken')
+        
+        if replace_token:
+            self._telegraph.access_token = response.get('access_token')
+        
+        return response
 
     def get_page(self, path, return_content=True, return_html=True):
         """ Get a Telegraph page
