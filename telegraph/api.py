@@ -113,7 +113,11 @@ class Telegraph(object):
             On success, returns dict with new access_token and auth_url fields
         """
 
-        return self._telegraph.method('revokeAccessToken')
+        response = self._telegraph.method('revokeAccessToken')
+
+        self._telegraph.access_token = response.get('access_token')
+
+        return response
 
     def get_page(self, path, return_content=True, return_html=True):
         """ Get a Telegraph page
