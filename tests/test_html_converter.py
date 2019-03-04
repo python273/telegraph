@@ -19,7 +19,7 @@ NODES_TEST_LIST = [
         'attrs': {'href': 'https://telegra.ph/'},
         'children': ['Test link</a>']
         }]
-    },
+     },
     {'tag': 'figure', 'children': [
         {'tag': 'img', 'attrs': {'src': '/file/6c2ecfdfd6881d37913fa.png'}},
         {'tag': 'figcaption'}
@@ -44,6 +44,8 @@ HTML_MULTI_LINES_NODES_LIST = [
         'world! '
     ]},
 ]
+
+HTML_NO_STARTTAG = "</a><h1></h1>"
 
 
 class TestHTMLConverter(TestCase):
@@ -130,3 +132,7 @@ class TestHTMLConverter(TestCase):
         ]
 
         self.assertEqual(clear_whitespace_nodes(nodes)[0], expected)
+
+    def test_no_starttag_node(self):
+        with self.assertRaises(InvalidHTML):
+             html_to_nodes(HTML_NO_STARTTAG)

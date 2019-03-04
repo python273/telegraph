@@ -83,6 +83,11 @@ class HtmlToNodesParser(HTMLParser):
         if tag in VOID_ELEMENTS:
             return
 
+        if not len(self.parent_nodes):
+            raise InvalidHTML('"{}" missing start tag'.format(
+                tag
+            ))
+
         self.current_nodes = self.parent_nodes.pop()
 
         last_node = self.current_nodes[-1]
