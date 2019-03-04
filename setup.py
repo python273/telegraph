@@ -14,7 +14,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-version = '1.3.2'
+version = '1.4.0'
 
 
 with open('README.md') as f:
