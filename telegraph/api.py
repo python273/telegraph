@@ -159,7 +159,7 @@ class Telegraph(object):
         if content is None:
             content = html_to_nodes(html_content)
 
-        content_json = json.dumps(content)
+        content_json = json.dumps(content, ensure_ascii=False)
 
         return self._telegraph.method('createPage', values={
             'title': title,
@@ -192,7 +192,7 @@ class Telegraph(object):
         if content is None:
             content = html_to_nodes(html_content)
 
-        content_json = json.dumps(content)
+        content_json = json.dumps(content, ensure_ascii=False)
 
         return self._telegraph.method('editPage', path=path, values={
             'title': title,
@@ -212,7 +212,7 @@ class Telegraph(object):
         """
 
         return self._telegraph.method('getAccountInfo', {
-            'fields': json.dumps(fields) if fields else None
+            'fields': json.dumps(fields, ensure_ascii=False) if fields else None
         })
 
     def get_page_list(self, offset=0, limit=50):
