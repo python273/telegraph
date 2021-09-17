@@ -11,13 +11,15 @@ class TelegraphApi(object):
     """ Telegraph API Client
 
     :param access_token: access_token
+    :param request_kwargs: key word arguments which will be used in requests
     :type access_token: str
     """
 
-    __slots__ = ('access_token', 'session')
+    __slots__ = ('access_token', 'request_kwargs', 'session')
 
-    def __init__(self, access_token=None):
+    def __init__(self, access_token=None, request_kwargs={}):
         self.access_token = access_token
+        self.request_kwargs = request_kwargs
         self.session = requests.Session()
 
     def method(self, method, values=None, path=''):
@@ -28,7 +30,8 @@ class TelegraphApi(object):
 
         response = self.session.post(
             'https://api.telegra.ph/{}/{}'.format(method, path),
-            values
+            values,
+            **self.request_kwargs
         ).json()
 
         if response.get('ok'):
@@ -41,12 +44,14 @@ class Telegraph(object):
     """ Telegraph API client helper
 
     :param access_token: Telegraph access token
+    :param request_kwargs: key word arguments which will be used in requests.
+        For further information, see https://docs.python-requests.org/en/latest/
     """
 
     __slots__ = ('_telegraph',)
 
-    def __init__(self, access_token=None):
-        self._telegraph = TelegraphApi(access_token)
+    def __init__(self, access_token=None, request_kwargs={}):
+        self._telegraph = TelegraphApi(access_token, request_kwargs)
 
     def get_access_token(self):
         """ Return current access_token
