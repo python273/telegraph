@@ -2,7 +2,7 @@ import mimetypes
 
 import requests
 
-from .exceptions import TelegraphException
+from .exceptions import TelegraphException, RetryAfterError
 
 
 def upload_file(f):
@@ -24,7 +24,11 @@ def upload_file(f):
         error = response.get('error')
 
     if error:
-        raise TelegraphException(error)
+        if str(error).startswith('FLOOD_WAIT'):
+            retry_after = error.rsplit('_',1)[-1]
+            raise RetryAfterError(retry_after)
+        else:
+            raise TelegraphException(error)
 
     return [i['src'] for i in response]
 
