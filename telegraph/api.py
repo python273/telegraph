@@ -35,8 +35,8 @@ class TelegraphApi(object):
             return response['result']
 
         error = response.get('error')
-        if str(error).startswith('FLOOD_WAIT'):
-            retry_after = error.rsplit('_',1)[-1]
+        if isinstance(error, str) and error.startswith('FLOOD_WAIT_'):
+            retry_after = int(error.rsplit('_', 1)[-1])
             raise RetryAfterError(retry_after)
         else:
             raise TelegraphException(error)
