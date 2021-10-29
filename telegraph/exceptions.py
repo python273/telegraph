@@ -16,7 +16,7 @@ class InvalidHTML(ParsingException):
     pass
 
 
-class RetryAfterError(Exception):
+class RetryAfterError(TelegraphException):
 
     def __init__(self, retry_after: int):
         self.retry_after = retry_after
