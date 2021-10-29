@@ -3,7 +3,7 @@ import json
 
 import requests
 
-from .exceptions import TelegraphException
+from .exceptions import TelegraphException, RetryAfterError
 from .utils import html_to_nodes, nodes_to_html
 
 
@@ -34,7 +34,12 @@ class TelegraphApi(object):
         if response.get('ok'):
             return response['result']
 
-        raise TelegraphException(response.get('error'))
+        error = response.get('error')
+        if isinstance(error, str) and error.startswith('FLOOD_WAIT_'):
+            retry_after = int(error.rsplit('_', 1)[-1])
+            raise RetryAfterError(retry_after)
+        else:
+            raise TelegraphException(error)
 
 
 class Telegraph(object):
