@@ -11,7 +11,7 @@ Python Telegraph API wrapper
 $ python3 -m pip install telegraph
 ```
 
-# Example
+## Example
 ```python
 from telegraph import Telegraph
 
