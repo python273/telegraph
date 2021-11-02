@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from telegraph.exceptions import NotAllowedTag, InvalidHTML
-from telegraph.utils import html_to_nodes, nodes_to_html, clear_whitespace_nodes
+from telegraph.utils import html_to_nodes, nodes_to_html
 
 HTML_TEST_STR = """
 <p>Hello, world!<br/></p>
@@ -71,6 +71,12 @@ class TestHTMLConverter(TestCase):
             HTML_MULTI_LINES_NODES_LIST
         )
 
+    def test_uppercase_tags(self):
+        self.assertEqual(
+            html_to_nodes("<P>Hello</P>"),
+            [{'tag': 'p', 'children': ['Hello']}]
+        )
+
     def test_html_to_nodes_invalid_html(self):
         with self.assertRaises(InvalidHTML):
             html_to_nodes('<p><b></p></b>')
@@ -99,23 +105,11 @@ class TestHTMLConverter(TestCase):
             ''
         )
 
-    def test_clear_whitespace_nodes(self):
-        nodes = [
-            '\n',
-            {'tag': 'p', 'children': [
-                {'tag': 'i', 'children': ['A']},
-                {'tag': 'b', 'children': [' ']},
-                {'tag': 'b', 'children': [
-                    'B ',
-                    {'tag': 'i', 'children': ['C']},
-                    {'tag': 'i', 'children': [{'tag': 'b'}]},
-                    ' D '
-                ]},
-                ' E '
-            ]},
-            {'tag': 'p', 'children': [' F ']},
-            '\n'
-        ]
+    def test_clear_whitespace(self):
+        i = (
+            '\n<p><i>A</i><b> </b><b>B <i>C</i><i><b></b></i>'
+            ' D </b> E </p><p> F </p>\n'
+        )
         expected = [
             {'tag': 'p', 'children': [
                 {'tag': 'i', 'children': ['A']},
@@ -131,7 +125,18 @@ class TestHTMLConverter(TestCase):
             {'tag': 'p', 'children': ['F ']}
         ]
 
-        self.assertEqual(clear_whitespace_nodes(nodes)[0], expected)
+        self.assertEqual(html_to_nodes(i), expected)
+
+    def test_clear_whitespace_1(self):
+        x = '\n<p><i>A</i><b> </b><b>B <i>C</i><i><b></b></i> D </b> E </p><p> F </p>\n'
+        y = '<p><i>A</i><b> </b><b>B <i>C</i><i><b></b></i> D </b>E </p><p>F </p>'
+        self.assertEqual(nodes_to_html(html_to_nodes(x)), y)
+
+    def test_pre_whitespace_preserved(self):
+        self.assertEqual(
+            html_to_nodes("<pre>\nhello\nworld</pre>"),
+            [{'tag': 'pre', 'children': ['\nhello\nworld']}]
+        )
 
     def test_no_starttag_node(self):
         with self.assertRaises(InvalidHTML):
