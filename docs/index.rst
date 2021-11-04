@@ -6,32 +6,53 @@ Installation
 
 .. code-block:: shell-session
 
-   $ pip install telegraph
+    $ python3 -m pip install telegraph
+    # with asyncio support
+    $ python3 -m pip install 'telegraph[aio]'
 
 Example
 -------
 
 .. code-block:: python
 
-   from telegraph import Telegraph
+    from telegraph import Telegraph
 
-   telegraph = Telegraph()
+    telegraph = Telegraph()
+    telegraph.create_account(short_name='1337')
 
-   telegraph.create_account(short_name='1337')
+    response = telegraph.create_page(
+        'Hey',
+        html_content='<p>Hello, world!</p>'
+    )
+    print(response['url'])
 
-   response = telegraph.create_page(
-       'Hey',
-       html_content='<p>Hello, world!</p>'
-   )
+Async Example
+-------------
 
-   print('https://telegra.ph/{}'.format(response['path']))
+.. code-block:: python
+
+    import asyncio
+    from telegraph.aio import Telegraph
+
+    async def main():
+        telegraph = Telegraph()
+        print(await telegraph.create_account(short_name='1337'))
+
+        response = await telegraph.create_page(
+            'Hey',
+            html_content='<p>Hello, world!</p>',
+        )
+        print(response['url'])
+
+
+    asyncio.run(main())
 
 
 .. toctree::
-   :maxdepth: 4
-   :caption: Contents:
+    :maxdepth: 4
+    :caption: Contents:
 
-   telegraph
+    telegraph
 
 
 Indices and tables

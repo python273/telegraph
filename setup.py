@@ -41,6 +41,9 @@ setup(
 
     packages=['telegraph'],
     install_requires=['requests'],
+    extras_require={
+        'aio': ['httpx'],
+    },
 
     classifiers=[
         'License :: OSI Approved :: MIT License',
