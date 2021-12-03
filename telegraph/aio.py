@@ -49,25 +49,28 @@ class TelegraphApi:
         :param f: filename or file-like object.
         :type f: file, str or list
         """
-        with FilesOpener(f) as files:
-            response = (await self.session.post(
-                'https://telegra.ph/upload',
-                files=files
-            )).json()
+        try:
+            with FilesOpener(f) as files:
+                response = (await self.session.post(
+                    'https://telegra.ph/upload',
+                    files=files
+                )).json()
 
-        if isinstance(response, list):
-            error = response[0].get('error')
-        else:
-            error = response.get('error')
-
-        if error:
-            if isinstance(error, str) and error.startswith('FLOOD_WAIT_'):
-                retry_after = int(error.rsplit('_',1)[-1])
-                raise RetryAfterError(retry_after)
+            if isinstance(response, list):
+                error = response[0].get('error')
             else:
-                raise TelegraphException(error)
+                error = response.get('error')
 
-        return response
+            if error:
+                if isinstance(error, str) and error.startswith('FLOOD_WAIT_'):
+                    retry_after = int(error.rsplit('_',1)[-1])
+                    raise RetryAfterError(retry_after)
+                else:
+                    raise TelegraphException(error)
+
+            return response
+        finally:
+            await self.session.aclose()
 
 
 class Telegraph:
