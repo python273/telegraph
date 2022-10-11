@@ -14,10 +14,11 @@ class TelegraphApi:
     :type access_token: str
     """
 
-    __slots__ = ('access_token', 'session')
+    __slots__ = ('access_token', 'base_url', 'session')
 
-    def __init__(self, access_token=None):
+    def __init__(self, access_token=None, base_url='telegra.ph'):
         self.access_token = access_token
+        self.base_url = base_url
         self.session = requests.Session()
 
     def method(self, method, values=None, path=''):
@@ -27,7 +28,7 @@ class TelegraphApi:
             values['access_token'] = self.access_token
 
         response = self.session.post(
-            'https://api.telegra.ph/{}/{}'.format(method, path),
+            'https://api.{}/{}/{}'.format(self.base_url, method, path),
             data=values
         ).json()
 
@@ -51,7 +52,7 @@ class TelegraphApi:
         """
         with FilesOpener(f) as files:
             response = self.session.post(
-                'https://telegra.ph/upload',
+                'https://{}/upload'.format(self.base_url),
                 files=files
             ).json()
 
@@ -78,8 +79,8 @@ class Telegraph:
 
     __slots__ = ('_telegraph',)
 
-    def __init__(self, access_token=None):
-        self._telegraph = TelegraphApi(access_token)
+    def __init__(self, access_token=None, base_url='telegra.ph'):
+        self._telegraph = TelegraphApi(access_token, base_url)
 
     def get_access_token(self):
         """Get current access_token"""
