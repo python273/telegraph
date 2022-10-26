@@ -12,12 +12,15 @@ class TelegraphApi:
 
     :param access_token: access_token
     :type access_token: str
+
+    :param domain: domain (e.g. alternative mirror graph.org)
     """
 
-    __slots__ = ('access_token', 'session')
+    __slots__ = ('access_token', 'domain', 'session')
 
-    def __init__(self, access_token=None):
+    def __init__(self, access_token=None, domain='telegra.ph'):
         self.access_token = access_token
+        self.domain = domain
         self.session = httpx.AsyncClient()
 
     async def method(self, method, values=None, path=''):
@@ -27,7 +30,7 @@ class TelegraphApi:
             values['access_token'] = self.access_token
 
         response = (await self.session.post(
-            'https://api.telegra.ph/{}/{}'.format(method, path),
+            'https://api.{}/{}/{}'.format(self.domain, method, path),
             data=values
         )).json()
 
@@ -51,7 +54,7 @@ class TelegraphApi:
         """
         with FilesOpener(f) as files:
             response = (await self.session.post(
-                'https://telegra.ph/upload',
+                'https://{}/upload'.format(self.domain),
                 files=files
             )).json()
 
@@ -73,13 +76,14 @@ class TelegraphApi:
 class Telegraph:
     """ Telegraph API client helper
 
-    :param access_token: Telegraph access token
+    :param access_token: access token
+    :param domain: domain (e.g. alternative mirror graph.org)
     """
 
     __slots__ = ('_telegraph',)
 
-    def __init__(self, access_token=None):
-        self._telegraph = TelegraphApi(access_token)
+    def __init__(self, access_token=None, domain='telegra.ph'):
+        self._telegraph = TelegraphApi(access_token, domain)
 
     def get_access_token(self):
         """Get current access_token"""
