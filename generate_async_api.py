@@ -1,9 +1,9 @@
 """Generate async api from sync api"""
+
 from typing import Optional
 
 import libcst as cst
 from libcst._nodes.expression import Await
-from libcst._nodes.whitespace import SimpleWhitespace
 
 
 class SyncToAsyncTransformer(cst.CSTTransformer):
@@ -71,12 +71,14 @@ class SyncToAsyncTransformer(cst.CSTTransformer):
         # await the call if it's API class method
         should_await = (
             path[-2:] == ["session", "self"]
-            or path[-3:] == [
+            or path[-3:]
+            == [
                 "method",
                 "_telegraph",
                 "self",
             ]
-            or path[-3:] == [
+            or path[-3:]
+            == [
                 "upload_file",
                 "_telegraph",
                 "self",
@@ -104,9 +106,7 @@ class SyncToAsyncTransformer(cst.CSTTransformer):
             return updated_node
 
         # mark fn as async
-        return updated_node.with_changes(
-            asynchronous=cst.Asynchronous()
-        )
+        return updated_node.with_changes(asynchronous=cst.Asynchronous())
 
 
 def main():

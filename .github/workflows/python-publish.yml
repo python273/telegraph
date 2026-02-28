@@ -1,26 +1,79 @@
-name: Upload Python Package
+name: CI and Publish
 
 on:
+  push:
+    branches: [ "typing" ]  # тестирование при пуше в ветку typing
+  pull_request:
+    branches: [ "main" ]    # тестирование при PR в main
   release:
-    types: [published]
+    types: [published]      # публикация только при создании релиза
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        # Для тестирования бета/альфа версий можно добавить:
+        # include:
+        #   - python-version: "3.14-dev"  # тестирование на dev версии
+    
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5  # обновил до v5
       with:
-        python-version: '3.x'
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true  # разрешает установку pre-release версий (например, 3.14-dev)
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build
+        # Устанавливаем pytest для более детальных отчётов
+        pip install pytest pytest-cov
+        # Устанавливаем ваш пакет в режиме разработки
+        pip install -e .
+        pip install -r requirements.txt
+
+    - name: Run tests with pytest
+      run: |
+        pytest tests/ --cov=./ --cov-report=xml -v
+
+    - name: Upload coverage to Codecov (опционально)
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    # Публикация только при создании релиза (и после успешных тестов)
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine  # twine для дополнительной проверки
+    
     - name: Build package
       run: python -m build
-    - name: Publish package
+    
+    - name: Check package with twine
+      run: twine check dist/*
+    
+    - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+        # Если хотите тестовую публикацию в Test PyPI:
+        # repository-url: https://test.pypi.org/legacy/

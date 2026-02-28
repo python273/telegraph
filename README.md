@@ -9,11 +9,9 @@ Python Telegraph API wrapper
 
 ```bash
 $ python3 -m pip install telegraph
-# with asyncio support
-$ python3 -m pip install 'telegraph[aio]'
 ```
 
-## Example
+### Example
 ```python
 from telegraph import Telegraph
 
@@ -25,9 +23,23 @@ response = telegraph.create_page(
     html_content='<p>Hello, world!</p>'
 )
 print(response['url'])
+
+telegraph.close()
 ```
 
-## Async Example
+#### Or with context manager
+```python
+
+with Telegraph() as telegraph:
+    telegraph.create_account(short_name='1337')
+    response = telegraph.create_page(
+        'Hey',
+        html_content='<p>Hello, world!</p>'
+    )
+    print(response['url'])
+```
+
+### Async Example
 ```python
 import asyncio
 from telegraph.aio import Telegraph
@@ -42,6 +54,26 @@ async def main():
     )
     print(response['url'])
 
+    await telegraph.aclose()
+
+
+asyncio.run(main())
+```
+
+#### Or with context manager
+```python
+import asyncio
+from telegraph.aio import Telegraph
+
+async def main():
+    async with Telegraph() as telegraph:
+        print(await telegraph.create_account(short_name='1337'))
+
+        response = await telegraph.create_page(
+            'Hey',
+            html_content='<p>Hello, world!</p>',
+        )
+        print(response['url'])
 
 asyncio.run(main())
 ```
