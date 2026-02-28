@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telegraph"
+dynamic = ["version", "readme"]
+description = "Telegraph API wrapper"
+requires-python = ">=3.7"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "python273", email = "telegraph@python273.pw" }
+]
+classifiers = [
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = ["requests"]
+
+[project.optional-dependencies]
+aio = ["httpx"]
+
+[project.urls]
+Homepage = "https://github.com/python273/telegraph"
+Source = "https://github.com/python273/telegraph"
+Documentation = "https://python-telegraph.readthedocs.io/en/latest/"
+
+[tool.setuptools]
+packages = ["telegraph"]
+
+[tool.setuptools.dynamic]
+version = { attr = "telegraph.__version__" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
