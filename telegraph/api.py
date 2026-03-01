@@ -2,6 +2,7 @@
 import json
 
 import requests
+from json import loads
 
 from .exceptions import TelegraphException, RetryAfterError
 from .utils import html_to_nodes, nodes_to_html, FilesOpener, json_dumps
@@ -56,7 +57,10 @@ class TelegraphApi:
             response = self.session.post(
                 'https://{}/upload'.format(self.domain),
                 files=files
-            ).json()
+            ).text
+        if response == "Unknown error":
+            raise TelegraphException("https://t.me/durov/343")
+        response = loads(response)
 
         if isinstance(response, list):
             error = response[0].get('error')
